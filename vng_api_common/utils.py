@@ -63,7 +63,7 @@ def get_resource_for_path(path: str) -> models.Model:
     lookup_url_kwarg = viewset.lookup_url_kwarg or viewset.lookup_field
     filter_kwargs = {viewset.lookup_field: viewset.kwargs[lookup_url_kwarg]}
 
-    return viewset.get_queryset().get(**filter_kwargs)
+    return viewset.get_object(**filter_kwargs)
 
 
 def underscore_to_camel(input_: Union[str, int]) -> str:
