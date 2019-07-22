@@ -3,10 +3,13 @@ from urllib.parse import urlparse
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
+from django.db.models import ObjectDoesNotExist
+from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import permissions
 from rest_framework.renderers import BrowsableAPIRenderer
 from rest_framework.request import Request
+from rest_framework.serializers import ValidationError
 
 from .scopes import Scope
 from .utils import get_resource_for_path
@@ -126,7 +129,15 @@ class RelatedObjAuthScopesRequired(BaseAuthRequired):
     def _get_obj(self, view, request):
         main_obj_str = request.data.get(self.obj_path, None)
         main_obj_url = urlparse(main_obj_str).path
-        main_obj = get_resource_for_path(main_obj_url)
+        try:
+            main_obj = get_resource_for_path(main_obj_url)
+        except ObjectDoesNotExist:
+            raise ValidationError({
+                self.obj_path: ValidationError(
+                    _('The object does not exist in the database'),
+                    code='object-does-not-exist'
+                ).detail
+            })
         return main_obj
 
 
