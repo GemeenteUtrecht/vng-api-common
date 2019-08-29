@@ -26,15 +26,21 @@ class AuditTrailMixin:
         """
         if hasattr(self, 'audittrail_main_resource_key'):
             return data[self.audittrail_main_resource_key]
-        return data[main_resource]
+        return data.__dict__ if data else None
+        # return getattr(data, main_resource)
 
     def create_audittrail(self, status_code, action, version_before_edit, version_after_edit, unique_representation):
         """
         Create the audittrail for the action that has been carried out.
         """
+        print('= VERSIONS ==================================================')
+        print(version_after_edit)
+        print(version_before_edit)
+        print('= END VERSIONS ==================================================')
         data = version_after_edit if version_after_edit else version_before_edit
+        print(data)
         if self.basename == self.audit.main_resource:
-            main_object = data['url']
+            main_object = data.url
         else:
             main_object = self.get_audittrail_main_object_url(data, self.audit.main_resource)
 
@@ -66,11 +72,11 @@ class AuditTrailMixin:
             resultaat=status_code,
             hoofd_object=main_object,
             resource=self.basename,
-            resource_url=data['url'],
+            resource_url=data.url,
             toelichting=toelichting,
             resource_weergave=unique_representation,
-            oud=version_before_edit,
-            nieuw=version_after_edit,
+            oud=version_before_edit.__dict__ if version_before_edit else None,
+            nieuw=version_after_edit.__dict__ if version_after_edit else None,
         )
         trail.save()
 
@@ -172,6 +178,7 @@ class AuditTrailViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         qs = super().get_queryset()
+        print(self.kwargs)
         identifier = self.kwargs.get(self.main_resource_lookup_field)
         if identifier:
             filtered = qs.filter(hoofd_object__contains=identifier)

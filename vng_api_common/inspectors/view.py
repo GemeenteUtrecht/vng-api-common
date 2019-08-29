@@ -204,9 +204,9 @@ class AutoSchema(SwaggerAutoSchema):
 
     @property
     def model(self):
-        if hasattr(self.view, 'get_queryset'):
-            qs = self.view.get_queryset()
-            return qs.model
+        # if hasattr(self.view, 'get_queryset'):
+        #     qs = self.view.get_queryset()
+        #     return qs.model
         return None
 
     @property
