@@ -24,12 +24,12 @@ class NotificationMixinBase(type):
     def __new__(cls, name, bases, attrs):
         new_cls = super().__new__(cls, name, bases, attrs)
 
-        kanaal = attrs.get("notifications_kanaal")
+        kanaal = attrs.get('notifications_kanaal')
+        resource = attrs.get('notifications_resource')
         if kanaal is None:
             return new_cls
 
         relevant_bases = [base for base in bases if issubclass(base, NotificationMixin)]
-        resource = new_cls.queryset.model._meta.model_name
         # use the router to figure out which actions are available
         router = SimpleRouter()
         for route in router.get_routes(new_cls):
@@ -75,7 +75,7 @@ class NotificationMixin(metaclass=NotificationMixinBase):
         """
         # using the main resource name, look up what the URL to this
         # object is/should be
-        return data[self.get_main_resource_key(kanaal)]
+        return getattr(data, self.get_main_resource_key(kanaal))
 
     def construct_message(self, data: dict, instance: models.Model = None) -> dict:
         """
@@ -91,7 +91,7 @@ class NotificationMixin(metaclass=NotificationMixinBase):
         kanaal = self.get_kanaal()
         assert isinstance(kanaal, Kanaal), "`kanaal` should be a `Kanaal` instance"
 
-        model = self.get_queryset().model
+        model = self.model
 
         if model is kanaal.main_resource:
             # look up the object in the database from its absolute URL
@@ -116,12 +116,12 @@ class NotificationMixin(metaclass=NotificationMixinBase):
             main_object_data = serializer.data
 
         message_data = {
-            "kanaal": kanaal.label,
-            "hoofd_object": main_object_url,
-            "resource": model._meta.model_name,
-            "resource_url": data["url"],
-            "actie": self.action,
-            "aanmaakdatum": timezone.now(),
+            'kanaal': kanaal.label,
+            'hoofd_object': main_object_url,
+            'resource': model._meta.model_name,
+            'resource_url': data.url,
+            'actie': self.action,
+            'aanmaakdatum': timezone.now(),
             # each channel knows which kenmerken it has, so delegate this
             "kenmerken": kanaal.get_kenmerken(main_object, main_object_data),
         }

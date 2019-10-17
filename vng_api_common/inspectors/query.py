@@ -17,14 +17,14 @@ class FilterInspector(CoreAPICompatInspector):
     enum options.
     """
 
-    def get_filter_parameters(self, filter_backend):
-        fields = super().get_filter_parameters(filter_backend)
-        if isinstance(filter_backend, OrderingFilter):
-            return fields
+    # def get_filter_parameters(self, filter_backend):
+    #     fields = super().get_filter_parameters(filter_backend)
+    #     if isinstance(filter_backend, OrderingFilter):
+    #         return fields
 
-        if fields:
-            queryset = self.view.get_queryset()
-            filter_class = filter_backend.get_filter_class(self.view, queryset)
+    #     if fields:
+    #         queryset = self.view.get_queryset()
+    #         filter_class = filter_backend.get_filter_class(self.view, queryset)
 
             for parameter in fields:
                 if parameter.name in filter_class.declared_filters:
@@ -52,13 +52,13 @@ class FilterInspector(CoreAPICompatInspector):
                 if not parameter.description and help_text:
                     parameter.description = force_text(model_field.help_text)
 
-        return fields
+    #     return fields
 
-    def process_result(self, result, method_name, obj, **kwargs):
-        """
-        Convert snake-case to camelCase.
-        """
-        if result and type(result) is list:
-            for parameter in result:
-                parameter.name = underscore_to_camel(parameter.name)
-        return result
+    # def process_result(self, result, method_name, obj, **kwargs):
+    #     """
+    #     Convert snake-case to camelCase.
+    #     """
+    #     if result and type(result) is list:
+    #         for parameter in result:
+    #             parameter.name = underscore_to_camel(parameter.name)
+    #     return result
