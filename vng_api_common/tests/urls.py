@@ -11,11 +11,17 @@ def _magic_args(args, kwargs):
     used urls.
     """
     if args and isinstance(args[0], models.Model):
-        url_name = f"{args[0]._meta.model_name}-detail"
+        name = args[0]._meta.model_name
+        if name in ["enkelvoudiginformatieobject", "objectinformatieobject"]:
+            name += 'en'
+        url_name = f"{name}-detail"
         kwargs["kwargs"].setdefault("uuid", args[0].uuid)
         args = (url_name,) + args[1:]
     elif args and inspect.isclass(args[0]) and issubclass(args[0], models.Model):
-        url_name = f"{args[0]._meta.model_name}-list"
+        name = args[0]._meta.model_name
+        if name in ["enkelvoudiginformatieobject", "objectinformatieobject"]:
+            name += 'en'
+        url_name = f"{name}-list"
         args = (url_name,) + args[1:]
     return args, kwargs
 

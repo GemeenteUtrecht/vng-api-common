@@ -26,8 +26,7 @@ class AuditTrailMixin:
         """
         if hasattr(self, "audittrail_main_resource_key"):
             return data[self.audittrail_main_resource_key]
-        return data.__dict__ if data else None
-        # return getattr(data, main_resource)
+        return data.url if data else None
 
     def create_audittrail(
         self,
@@ -69,7 +68,6 @@ class AuditTrailMixin:
         request_id = get_header(self.request, "X-NLX-Request-Id") or ""
 
         toelichting = get_header(self.request, "X-Audit-Toelichting") or ""
-
         trail = AuditTrail(
             bron=self.audit.component_name,
             request_id=request_id,
