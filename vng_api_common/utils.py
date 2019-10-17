@@ -81,7 +81,6 @@ def get_resource_for_path(path: str) -> models.Model:
     # See rest_framework.mixins.RetieveModelMixin.get_object()
     lookup_url_kwarg = viewset.lookup_url_kwarg or viewset.lookup_field
     filter_kwargs = {viewset.lookup_field: viewset.kwargs[lookup_url_kwarg]}
-    print(filter_kwargs)
     return viewset.get_object(**filter_kwargs)
 
 

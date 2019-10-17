@@ -40,13 +40,15 @@ class AuditTrail(models.Model):
         validators=[MinValueValidator(100), MaxValueValidator(599)],
     )
     hoofd_object = models.URLField(
-        max_length=1000, help_text=_("De URL naar het hoofdobject van een component.")
+        max_length=2000,
+        help_text=_("De URL naar het hoofdobject van een component.")
     )
     resource = models.CharField(
         max_length=50, help_text=_("Het type resource waarop de actie gebeurde.")
     )
     resource_url = models.URLField(
-        max_length=1000, help_text=_("De URL naar het object.")
+        max_length=2000,
+        help_text=_("De URL naar het object.")
     )
     aanmaakdatum = models.DateTimeField(
         auto_now=True, help_text=_("De datum waarop de handeling is gedaan.")

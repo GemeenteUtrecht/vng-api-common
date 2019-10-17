@@ -40,12 +40,7 @@ class AuditTrailMixin:
         """
         Create the audittrail for the action that has been carried out.
         """
-        print('= VERSIONS ==================================================')
-        print(version_after_edit)
-        print(version_before_edit)
-        print('= END VERSIONS ==================================================')
         data = version_after_edit if version_after_edit else version_before_edit
-        print(data)
         if self.basename == self.audit.main_resource:
             main_object = data.url
         else:
@@ -204,7 +199,6 @@ class AuditTrailViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         qs = super().get_queryset()
-        print(self.kwargs)
         identifier = self.kwargs.get(self.main_resource_lookup_field)
         if identifier:
             filtered = qs.filter(hoofd_object__contains=identifier)
