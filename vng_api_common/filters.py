@@ -1,5 +1,6 @@
 from urllib.parse import urlencode, urlparse
 
+from django import forms
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.forms.widgets import URLInput
@@ -61,6 +62,19 @@ class Backend(DjangoFilterBackend):
         query_params = self._transform_query_params(view, filter_parameters)
         kwargs["data"] = query_params
         return kwargs
+
+
+class URLField(forms.CharField):
+    widget = URLInput
+
+    def to_python(self, value: str):
+        url_form_field = forms.URLField(required=False)
+        value = url_form_field.clean(value)
+        return super().to_python(value)
+
+
+class URLFilter(filters.CharFilter):
+    field_class = URLField
 
 
 class URLModelChoiceField(fields.ModelChoiceField):
