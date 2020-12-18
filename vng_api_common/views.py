@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 from collections import OrderedDict
 
 from django.apps import apps
@@ -30,19 +31,21 @@ def exception_handler(exc, context):
     Transform 4xx and 5xx errors into DSO-compliant shape.
     """
     response = drf_exception_handler(exc, context)
+    request = context.get("request")
     if response is None:
         if os.getenv("DEBUG", "").lower() in ["yes", "1", "true"]:
             return None
 
         logger.exception(exc.args[0], exc_info=1)
         # make sure the exception still ends up in Sentry
-        sentry_client.captureException()
+        sentry_client.captureException(
+            exc_info=sys.exc_info(),
+            request=request,
+        )
 
         # unkown type, so we use the generic Internal Server Error
         exc = drf_exceptions.APIException("Internal Server Error")
         response = Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-    request = context.get("request")
 
     serializer = HandledException.as_serializer(exc, response, request)
     response.data = OrderedDict(serializer.data.items())
